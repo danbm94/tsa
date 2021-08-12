@@ -1,0 +1,114 @@
+---
+#
+# Required Information --------------------------------------------------------
+# change lines 5 - 15
+title: "Time Series Analysis"
+type: "Final Project"
+author: "Daniel Bustillo Mac Lean"
+matriculation_number: "609728"
+date: "`r`Sys.date()"
+university: "Humboldt-Universität zu Berlin"
+institute: "School of Business and Economics" 
+chair: "Institute for Statistics and Econometrics"
+advisor1: "Prof. Dr. Simone Maxand"
+program: "Master of Science in Economics"
+
+# Optional Information --------------------------------------------------------
+# comment out if unnecessary
+# chair2: "Chair of Econometrics"
+# abstract: |  
+#   `r if(knitr:::is_latex_output()) paste(readLines("prelim/00-abstract.Rmd"), collapse = '\n  ')`
+# acknowledge: |  
+#   `r if(knitr:::is_latex_output()) paste(readLines("prelim/00-acknowledge.Rmd"), collapse = '\n  ')`
+# abbreviations: |  
+#   `r if(knitr:::is_latex_output()) paste(readLines("prelim/00-abbreviations.Rmd"), collapse = '\n  ')`
+# lot: true                              # list of tables
+# lof: true                              # list of figures
+# link-citations: true
+# bibliography: bib/references.bib       # bibliography file
+# #
+# Rendering Options -----------------------------------------------------------
+#
+knit: "bookdown::render_book"
+output: 
+  huwiwidown::thesis_pdf  
+space_between_paragraphs: true       # if you want spaces bt paragraph
+# header-includes:     # if including additional latex packages or commands
+  # - \setlength{\parindent}{17pt}
+---
+
+<!--
+Above is the YAML (YAML Ain't Markup Language) header that includes a lot of
+metadata used to produce the document.  Be careful with spacing in this header!
+If you'd like to include a comment that won't be produced in your resulting file
+enclose it in a block like this.
+-->
+
+<!--
+If you receive a duplicate label error after knitting, make sure to delete the
+index.Rmd file and then knit again.
+-->
+
+```{r include_packages, include = FALSE}
+# This chunk ensures that the `huwiwidown` package is installed and loaded. This
+# package includes the template files for the thesis.
+if (!require(devtools)) {
+  install.packages("devtools", repos = "http://cran.rstudio.com")
+}
+if (!require(huwiwidown)) {
+  devtools::install_github("phister/huwiwidown")
+  library(huwiwidown)
+}
+```
+
+<!-- 
+The {.unnumbered} option here means that the introduction will be "Section  0."
+You can also use {-} for no numbers on section. 
+-->
+
+<!--
+The body of the thesis starts underneath the text below. Feel free to delete
+everything below this.
+-->
+
+# Motivation
+
+Increasing evidence has shown that human emissions of carbon dioxide and other
+greenhouse gases are a primary driver of climate change (IPCC, 2013). This
+makes worldwide emissions one of the world’s most pressing challenges and has
+provoked various international agreement, like the Paris Agreement on emission
+reduction and other climate goals. Three of the largest current emitting regions
+are China, the US and the EU.
+
+# Introduction
+
+The main topic of this term paper is to analyze and model the trends of CO2 emissions in some of the countries of the European Union, the United States of America and China (and perhaps comparing them with emerging economics such as Brazil and India). Current actions to mitigate the climate effects of such steep rise of CO2 emissions over the last 50-60 years (citation needed) are not enough to reach the goals set in the Paris Agreement by 2030. Such is the slowed response from the governing institutions and international organizations that the current trends indicate that the temperature increases (and all the consequences behind it) will be irreversible in less that 5 years(citation needed).
+This paper will analyze the trends of CO2 emissions of the above-mentioned countries and will design a fitting econometric model. Lastly, a forecast for the next periods based on the model will be presented.
+
+
+ The econometric and economic theory is briefly described and related literature is presented
+
+Idea: compare with GDP or GNP
+
+Include kyoto and paris agreement and other historical events (fukushima, fridays for future?)
+
+# The model and data
+
+The econometric model and the data applied are described, a first descriptive analysis of the data is shown
+
+# Estimation and results
+
+The model choice is reasoned well in statistical and economic terms, the estimation results are presented, the results are interpreted and connected to the economic theory and literature from point 1.
+
+Find an appropriate ARIMA model to describe the three series. Base your
+decision on (P)ACFs, unit root tests, AIC and further diagnostic checks.
+What limits the validity of these results?
+4. Forecast the CO2 emissions one period ahead and for 2030 based on the chosen model. Evaluate the forecast in comparison to an alternative prediction
+method.
+5. Discuss the economic consequences of your results and suggest different
+techniques how your model and a potential long-term forecast could be
+improved.
+
+# Conclusion:
+
+Summary of the main results and outlook on further interesting research directions
