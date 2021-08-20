@@ -12,7 +12,7 @@
 
 <meta name="author" content="Daniel Bustillo Mac Lean" />
 
-<meta name="date" content="2021-08-12" />
+<meta name="date" content="2021-08-20" />
 
 <title>Time Series Analyisis</title>
 
@@ -62,7 +62,7 @@ if (window.hljs) {
 <h1 class="title toc-ignore">Time Series Analyisis</h1>
 <h3 class="subtitle">An implementation in R Markdown</h3>
 <h4 class="author">Daniel Bustillo Mac Lean</h4>
-<h4 class="date">2021-08-12</h4>
+<h4 class="date">2021-08-20</h4>
 
 
 
@@ -73,6 +73,16 @@ if (window.hljs) {
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>The main topic of this term paper is to analyze and model the trends of CO2 emissions in some of the countries of the European Union, the United States of America and China (and perhaps comparing them with emerging economics such as Brazil and India). Current actions to mitigate the climate effects of such steep rise of CO2 emissions over the last 50-60 years (citation needed) are not enough to reach the goals set in the Paris Agreement by 2030. Such is the slowed response from the governing institutions and international organizations that the current trends indicate that the temperature increases (and all the consequences behind it) will be irreversible in less that 5 years(citation needed). This paper will analyze the trends of CO2 emissions of the above-mentioned countries and will design a fitting econometric model. Lastly, a forecast for the next periods based on the model will be presented.</p>
+<ul>
+<li>What do we already know about the subject (literature review)? Use citations: <span class="citation">@lingenfelser2011systematic</span> shows that… Alternative Forms of the Wald test are considered <span class="citation">[@kuncheva2004combining]</span>.</li>
+</ul>
+<p>Some exploratory data analysis on the different datasets</p>
+<p>What kind of data do we use? C02 emissions per capita, why? Arguments for using that measure -&gt; Although all 3 regions are really big, the population density is different and thus “spreading” the CO2 emissions by population gives us more sensible data and accounted for the different sizes of population.</p>
+<p>Plot of CO2 in Europe</p>
+<p>Plot of CO2 in USA</p>
+<p>Plot of CO2 in China</p>
+<p>(Plot of CO2 in Brazil</p>
+<p>Plot of CO2 in India)</p>
 <p>The econometric and economic theory is briefly described and related literature is presented</p>
 <p>Idea: compare with GDP or GNP</p>
 <p>Include kyoto and paris agreement and other historical events (fukushima, fridays for future?)</p>
@@ -80,15 +90,68 @@ if (window.hljs) {
 <div id="the-model-and-data" class="section level1">
 <h1>The model and data</h1>
 <p>The econometric model and the data applied are described, a first descriptive analysis of the data is shown</p>
+<ul>
+<li><p>Describe the data and its quality.All data is taken from the World Bank’s Database, overall this database has proven to be reliable for industrialized countries, not su much for developing countries, since their data might be manipulated(?).</p></li>
+<li><p>How was the data sample selected?</p>
+<p>As stated in the Introduction, our interest here is to analyze the trends of the 3 biggest emitters of Co2 in the world: the USA, the European Union and China [quote on that]. Additionally, we compare those trends and forecast, with trends and forecast of emerging economies such as Brazil and India, as those countries display worrying trends on CO2 emissions that could lead to irreversible temperature rises, contamination and deforestation.</p></li>
+<li><p>Provide descriptive statistics such as:</p>
+<ul>
+<li><p>time period,</p></li>
+<li><p>item number of observations, data frequency,</p></li>
+<li><p>item mean, median,</p></li>
+<li><p>item min, max, standard deviation,</p></li>
+<li><p>item skewness, kurtosis, Jarque–Bera statistic,</p></li>
+<li><p>item time series plots, histogram.</p></li>
+</ul></li>
+<li><p>Allows the reader to judge whether the sample is biased or to evaluate possible impacts of outliers, for example.</p></li>
+<li><p>Here tables can be easily integrated using the <code>kable()</code> function in the <code>knitr</code> package (with perhaps some additional help from the <code>kableExtra</code> package). <code>kable()</code> will automatically generate a label for the table environment. That way you don’t have to manually enter in the table in LaTex, you can embed tables from R code.</p></li>
+</ul>
+</div>
+<div id="methodology" class="section level1">
+<h1>Methodology</h1>
+<ul>
+<li><p>How was the data analyzed ?</p></li>
+<li><p>Present the underlying economic model/theory and give reasons why it is suitable to answer the given problem<label for="tufte-sn-1" class="margin-toggle sidenote-number">1</label><input type="checkbox" id="tufte-sn-1" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">1</span> Here is an example of a footnote.</span>.</p></li>
+<li><p>Present econometric/statistical estimation method and give reasons why it is suitable to answer the given problem.</p></li>
+<li><p>Allows the reader to judge the validity of the study and its findings.</p></li>
+<li><p>Depending on the topic this section can also be split up into separate sections.</p></li>
+</ul>
 </div>
 <div id="estimation-and-results" class="section level1">
 <h1>Estimation and results</h1>
 <p>The model choice is reasoned well in statistical and economic terms, the estimation results are presented, the results are interpreted and connected to the economic theory and literature from point 1.</p>
 <p>Find an appropriate ARIMA model to describe the three series. Base your decision on (P)ACFs, unit root tests, AIC and further diagnostic checks. What limits the validity of these results? 4. Forecast the CO2 emissions one period ahead and for 2030 based on the chosen model. Evaluate the forecast in comparison to an alternative prediction method. 5. Discuss the economic consequences of your results and suggest different techniques how your model and a potential long-term forecast could be improved.</p>
+<ul>
+<li><p>Do the results support or do they contradict economic theory ?</p></li>
+<li><p>What does the reader learn from the results?</p></li>
+<li><p>Try to give an intuition for your results.</p></li>
+<li><p>Provide robustness checks.</p></li>
+<li><p>Compare to previous research.</p></li>
+</ul>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion:</h1>
 <p>Summary of the main results and outlook on further interesting research directions</p>
+<ul>
+<li><p>Give a short summary of what has been done and what has been found.</p></li>
+<li><p>Expose results concisely.</p></li>
+<li><p>Draw conclusions about the problem studied. What are the implications of your findings?</p></li>
+<li><p>Point out some limitations of study (assist reader in judging validity of findings).</p></li>
+<li><p>Suggest issues for future research.</p></li>
+</ul>
+<ul>
+<li><p>R Markdown can also supports math equations just like <em>LaTeX</em>!</p>
+<ul>
+<li><p><em>Equation</em> @ref(eq:SpecDens) <em>represents the ACs of a stationary stochastic process:</em> <span class="math display">\[\begin{equation}
+        f_y(\lambda) = (2\pi)^{-1} \sum_{j=-\infty}^{\infty}
+                       \gamma_j e^{-i\lambda j}
+                     =(2\pi)^{-1}\left(\gamma_0 + 2 \sum_{j=1}^{\infty}
+    \gamma_j \cos(\lambda j)\right)
+                                   (\#eq:SpecDens)
+\end{equation}\]</span> <em>where</em> <span class="math inline">\(i=\sqrt{-1}\)</span> is the imaginary unit, <span class="math inline">\(\lambda \in [-\pi, \pi]\)</span> is the frequency and the <span class="math inline">\(\gamma_j\)</span> are the autocovariances of <span class="math inline">\(y_t\)</span>.</p></li>
+<li><p>Equations can be referenced with <code>\@ref(eq:&lt;name&gt;)</code>, where name is defined by adding <code>(\#eq:&lt;name&gt;)</code> in the line immediately before <code>\end{equation}</code>.</p></li>
+</ul></li>
+</ul>
 </div>
 
 

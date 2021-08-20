@@ -1,7 +1,4 @@
 ---
-#
-# Required Information --------------------------------------------------------
-# change lines 5 - 15
 title: "Time Series Analysis"
 type: "Final Project"
 author: "Daniel Bustillo Mac Lean"
@@ -12,9 +9,6 @@ institute: "School of Business and Economics"
 chair: "Institute for Statistics and Econometrics"
 advisor1: "Prof. Dr. Simone Maxand"
 program: "Master of Science in Economics"
-
-# Optional Information --------------------------------------------------------
-# comment out if unnecessary
 # chair2: "Chair of Econometrics"
 # abstract: |  
 #   `r if(knitr:::is_latex_output()) paste(readLines("prelim/00-abstract.Rmd"), collapse = '\n  ')`
@@ -26,29 +20,31 @@ program: "Master of Science in Economics"
 # lof: true                              # list of figures
 # link-citations: true
 # bibliography: bib/references.bib       # bibliography file
-# #
-# Rendering Options -----------------------------------------------------------
-#
 knit: "bookdown::render_book"
 output: 
   huwiwidown::thesis_pdf  
 space_between_paragraphs: true       # if you want spaces bt paragraph
 # header-includes:     # if including additional latex packages or commands
   # - \setlength{\parindent}{17pt}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
+```{=html}
 <!--
 Above is the YAML (YAML Ain't Markup Language) header that includes a lot of
 metadata used to produce the document.  Be careful with spacing in this header!
 If you'd like to include a comment that won't be produced in your resulting file
 enclose it in a block like this.
 -->
-
+```
+```{=html}
 <!--
 If you receive a duplicate label error after knitting, make sure to delete the
 index.Rmd file and then knit again.
 -->
-
+```
 ```{r include_packages, include = FALSE}
 # This chunk ensures that the `huwiwidown` package is installed and loaded. This
 # package includes the template files for the thesis.
@@ -61,97 +57,161 @@ if (!require(huwiwidown)) {
 }
 ```
 
+```{=html}
 <!-- 
 The {.unnumbered} option here means that the introduction will be "Section  0."
 You can also use {-} for no numbers on section. 
 -->
-
+```
+```{=html}
 <!--
 The body of the thesis starts underneath the text below. Feel free to delete
 everything below this.
 -->
-
+```
 # Motivation
 
-Increasing evidence has shown that human emissions of carbon dioxide and other
-greenhouse gases are a primary driver of climate change (IPCC, 2013). This
-makes worldwide emissions one of the world’s most pressing challenges and has
-provoked various international agreement, like the Paris Agreement on emission
-reduction and other climate goals. Three of the largest current emitting regions
-are China, the US and the EU.
+Increasing evidence has shown that human emissions of carbon dioxide and
+other greenhouse gases are a primary driver of climate change (IPCC,
+2013). This makes worldwide emissions one of the world's most pressing
+challenges and has provoked various international agreement, like the
+Paris Agreement on emission reduction and other climate goals. Three of
+the largest current emitting regions are China, the US and the EU.
 
 # Introduction
 
-The main topic of this term paper is to analyze and model the trends of CO2 emissions in some of the countries of the European Union, the United States of America and China (and perhaps comparing them with emerging economics such as Brazil and India). Current actions to mitigate the climate effects of such steep rise of CO2 emissions over the last 50-60 years (citation needed) are not enough to reach the goals set in the Paris Agreement by 2030. Such is the slowed response from the governing institutions and international organizations that the current trends indicate that the temperature increases (and all the consequences behind it) will be irreversible in less that 5 years(citation needed).
-This paper will analyze the trends of CO2 emissions of the above-mentioned countries and will design a fitting econometric model. Lastly, a forecast for the next periods based on the model will be presented.
+The main topic of this term paper is to analyze and model the trends of
+CO2 emissions in some of the countries of the European Union, the United
+States of America and China (and perhaps comparing them with emerging
+economics such as Brazil and India). Current actions to mitigate the
+climate effects of such steep rise of CO2 emissions over the last 50-60
+years (citation needed) are not enough to reach the goals set in the
+Paris Agreement by 2030. Such is the slowed response from the governing
+institutions and international organizations that the current trends
+indicate that the temperature increases (and all the consequences behind
+it) will be irreversible in less that 5 years(citation needed). This
+paper will analyze the trends of CO2 emissions of the above-mentioned
+countries and will design a fitting econometric model. Lastly, a
+forecast for the next periods based on the model will be presented.
 
+Some exploratory data analysis on the different datasets
 
- The econometric and economic theory is briefly described and related literature is presented
+What kind of data do we use? C02 emissions per capita, why? Arguments
+for using that measure -\> Although all 3 regions are really big, the
+population density is different and thus "spreading" the CO2 emissions
+by population gives us more sensible data and accounted for the
+different sizes of population.
+
+Plot of CO2 in Europe
+
+Plot of CO2 in USA
+
+Plot of CO2 in China
+
+(Plot of CO2 in Brazil
+
+Plot of CO2 in India)
+
+The econometric and economic theory is briefly described and related
+literature is presented
 
 Idea: compare with GDP or GNP
 
-Include kyoto and paris agreement and other historical events (fukushima, fridays for future?)
+Include kyoto and paris agreement and other historical events
+(fukushima, fridays for future?)
 
 # The model and data
 
-The econometric model and the data applied are described, a first descriptive analysis of the data is shown
+The econometric model and the data applied are described, a first
+descriptive analysis of the data is shown
+
+-   Describe the data and its quality.All data is taken from the World
+    Bank's Database, overall this database has proven to be reliable.
+
+-   How was the data sample selected?
+
+    As stated in the Introduction, our interest here is to analyze the
+    trends of the 3 biggest emitters of Co2 in the world: the USA, the
+    European Union and China [quote on that]. Additionally, we compare
+    those trends and forecast, with trends and forecast of emerging
+    economies such as Brazil and India, as the
+
+-   Provide descriptive statistics such as:
+
+    -   time period,
+
+    -   item number of observations, data frequency,
+
+    -   item mean, median,
+
+    -   item min, max, standard deviation,
+
+    -   item skewness, kurtosis, Jarque--Bera statistic,
+
+    -   item time series plots, histogram.
 
 # Estimation and results
 
-The model choice is reasoned well in statistical and economic terms, the estimation results are presented, the results are interpreted and connected to the economic theory and literature from point 1.
+The model choice is reasoned well in statistical and economic terms, the
+estimation results are presented, the results are interpreted and
+connected to the economic theory and literature from point 1.
 
 Find an appropriate ARIMA model to describe the three series. Base your
 decision on (P)ACFs, unit root tests, AIC and further diagnostic checks.
-What limits the validity of these results?
-4. Forecast the CO2 emissions one period ahead and for 2030 based on the chosen model. Evaluate the forecast in comparison to an alternative prediction
-method.
-5. Discuss the economic consequences of your results and suggest different
+What limits the validity of these results? 4. Forecast the CO2 emissions
+one period ahead and for 2030 based on the chosen model. Evaluate the
+forecast in comparison to an alternative prediction method. 5. Discuss
+the economic consequences of your results and suggest different
 techniques how your model and a potential long-term forecast could be
 improved.
 
 # Conclusion:
 
-Summary of the main results and outlook on further interesting research directions
+Summary of the main results and outlook on further interesting research
+directions
 
 <!--chapter:end:index.Rmd-->
 
 # Introduction
 
-* What is the subject of the study? Describe the economic/econometric problem.
+-   What is the subject of the study? Describe the economic/econometric
+    problem.
 
-* What is the purpose of the study (working hypothesis)?
+-   What is the purpose of the study (working hypothesis)?
 
-* What do we already know about the subject (literature review)? Use citations:
-  @lingenfelser2011systematic shows that... Alternative Forms of the Wald test are
-  considered [@kuncheva2004combining].
-  
-* What is the innovation of the study?
+-   What do we already know about the subject (literature review)? Use
+    citations: @lingenfelser2011systematic shows that... Alternative
+    Forms of the Wald test are considered [@kuncheva2004combining].
 
-* Provide an overview of your results.
+-   What is the innovation of the study?
 
-* Outline of the paper:\
-  _The paper is organized as follows. The next section describes the model
-  under investigation. Section "[Data]" describes the data set
-  and Section "[Results]" presents the results. Finally, Section
-  "[Conclusion]" concludes._
-* The introduction should not be longer than 4 pages.
+-   Provide an overview of your results.
+
+-   Outline of the paper:\
+    *The paper is organized as follows. The next section describes the
+    model under investigation. Section "[Data]" describes the data set
+    and Section "[Results]" presents the results. Finally, Section
+    "[Conclusion](#conclusion-1)" concludes.*
+
+-   The introduction should not be longer than 4 pages.
 
 <!--chapter:end:sections/01-intro.Rmd-->
 
 # Methodology
 
-* How was the data analyzed ?
+-   How was the data analyzed ?
 
-* Present the underlying economic model/theory and give reasons why it is
-  suitable to answer the given problem[^1].
+-   Present the underlying economic model/theory and give reasons why it
+    is suitable to answer the given problem[^1].
 
-* Present econometric/statistical estimation method and give reasons why it is
-  suitable to answer the given problem.
+-   Present econometric/statistical estimation method and give reasons
+    why it is suitable to answer the given problem.
 
-* Allows the reader to judge the validity of the study and its findings.
+-   Allows the reader to judge the validity of the study and its
+    findings.
 
-* Depending on the topic this section can also be split up into separate
-  sections.
+-   Depending on the topic this section can also be split up into
+    separate sections.
 
 [^1]: Here is an example of a footnote.
 
@@ -159,25 +219,25 @@ Summary of the main results and outlook on further interesting research directio
 
 # Data
 
-* Describe the data and its quality.
+-   Describe the data and its quality.
 
-* How was the data sample selected?
+-   How was the data sample selected?
 
-* Provide descriptive statistics such as:
+-   Provide descriptive statistics such as:
 
-  * time period,
+    -   time period,
 
-  * item number of observations, data frequency,
+    -   item number of observations, data frequency,
 
-  * item mean, median,
+    -   item mean, median,
 
-  * item min, max, standard deviation,
+    -   item min, max, standard deviation,
 
-  * item skewness, kurtosis, Jarque--Bera statistic,
+    -   item skewness, kurtosis, Jarque--Bera statistic,
 
-  * item time series plots, histogram.
+    -   item time series plots, histogram.
 
-* For example:
+-   For example:
 
 ```{r table1, echo=FALSE}
 col_names <- c(
@@ -206,157 +266,163 @@ kable_styling(latex_options = c("HOLD_position")) %>%
 row_spec(2, hline_after = T)
 ```
 
-* Allows the reader to judge whether the sample is biased or to evaluate 
-  possible impacts of outliers, for example.
+-   Allows the reader to judge whether the sample is biased or to
+    evaluate possible impacts of outliers, for example.
 
-* Here tables can be easily integrated using the `kable()` function in the
-  `knitr` package (with perhaps some additional help from the `kableExtra`
-  package). `kable()` will automatically generate a label for the table
-  environment. That way you don't have to manually enter in the table in LaTex,
-  you can embed tables from R code. 
+-   Here tables can be easily integrated using the `kable()` function in
+    the `knitr` package (with perhaps some additional help from the
+    `kableExtra` package). `kable()` will automatically generate a label
+    for the table environment. That way you don't have to manually enter
+    in the table in LaTex, you can embed tables from R code.
 
-* Tables can be referenced using `\@ref(label)`, where `label` is `tab:<name>`,
-  where `<name>` is the code chunk label.
+-   Tables can be referenced using `\@ref(label)`, where `label` is
+    `tab:<name>`, where `<name>` is the code chunk label.
 
-* The appearance may look different to tables directly typed with LaTex, due to
-  limitations in `kable()`. To compare:
+-   The appearance may look different to tables directly typed with
+    LaTex, due to limitations in `kable()`. To compare:
+
+    ```{=tex}
     \begin{table}[ht]
 
-    \begin{center}
-        {\footnotesize
-        \begin{tabular}{l|cccccccccc}
-            \hline \hline
-                      & 3m    & 6m    & 1yr   & 2yr   & 3yr   & 5yr   & 7yr   & 10yr  & 12yr  & 15yr   \\
-            \hline
-                Mean   & 3.138 & 3.191 & 3.307 & 3.544 & 3.756 & 4.093 & 4.354 & 4.621 & 4.741 & 4.878  \\
-                StD    & 0.915 & 0.919 & 0.935 & 0.910 & 0.876 & 0.825 & 0.803 & 0.776 & 0.768 & 0.762  \\
-            \hline \hline
-        \end{tabular}}
-    \end{center}
-    \caption{This table was handwritten with LaTeX.}
-    \label{tab:table2}
-    \end{table}
+      \begin{center}
+          {\footnotesize
+          \begin{tabular}{l|cccccccccc}
+              \hline \hline
+                        & 3m    & 6m    & 1yr   & 2yr   & 3yr   & 5yr   & 7yr   & 10yr  & 12yr  & 15yr   \\
+              \hline
+                  Mean   & 3.138 & 3.191 & 3.307 & 3.544 & 3.756 & 4.093 & 4.354 & 4.621 & 4.741 & 4.878  \\
+                  StD    & 0.915 & 0.919 & 0.935 & 0.910 & 0.876 & 0.825 & 0.803 & 0.776 & 0.768 & 0.762  \\
+              \hline \hline
+          \end{tabular}}
+      \end{center}
+      \caption{This table was handwritten with LaTeX.}
+      \label{tab:table2}
+      \end{table}
+    ```
 
 <!--chapter:end:sections/03-data.Rmd-->
 
 # Results
 
-* Organize material and present results.
+-   Organize material and present results.
 
-* Use tables, figures (but prefer visual presentation):
+-   Use tables, figures (but prefer visual presentation):
 
-  + Tables and figures should supplement (and not duplicate) the text.
+    -   Tables and figures should supplement (and not duplicate) the
+        text.
 
-  + Tables and figures should be provided with legends.
+    -   Tables and figures should be provided with legends.
 
-  + _Figure \@ref(fig:graph) shows how to include and reference graphics.
-    The graphic must be labelled before. Files must be in __.eps__ format. You
-    can do this really easily in R Markdown with `knitr::include_graphics()`_!
+    -   *Figure* \@ref(fig:graph) *shows how to include and reference
+        graphics. The graphic must be labelled before. Files must be in
+        **.eps** format. You can do this really easily in R Markdown
+        with `knitr::include_graphics()`*!
 
-  + Figures can be referenced with `\@ref(fig:<name>)`, where `<name>` is the
-    name of the code chunk.
+    -   Figures can be referenced with `\@ref(fig:<name>)`, where
+        `<name>` is the name of the code chunk.
 
-```{r graph, echo=FALSE, fig.cap="Estimated residuals from model XXX. ...", out.width = "50%"}
-knitr::include_graphics("figures/graph.eps")
-```
-  + Tables and graphics may appear in the text or in the appendix, especially if
-  there are many simulation results tabulated, but is also depends on the study
-  and number of tables resp. figures. The key graphs and tables must appear in
-  the text!
+    -   Tables and graphics may appear in the text or in the appendix,
+        especially if there are many simulation results tabulated, but
+        is also depends on the study and number of tables resp. figures.
+        The key graphs and tables must appear in the text!
 
-* R Markdown can also supports math equations just like _LaTeX_!
+-   R Markdown can also supports math equations just like *LaTeX*!
 
-  + _Equation \@ref(eq:SpecDens) represents the ACs of a stationary
-    stochastic process:_
-    \begin{equation}
-            f_y(\lambda) = (2\pi)^{-1} \sum_{j=-\infty}^{\infty}
-                           \gamma_j e^{-i\lambda j}
-                         =(2\pi)^{-1}\left(\gamma_0 + 2 \sum_{j=1}^{\infty}
-        \gamma_j \cos(\lambda j)\right)
-                                       (\#eq:SpecDens)
-    \end{equation}
-    _where $i=\sqrt{-1}$ is the imaginary unit, $\lambda \in [-\pi, \pi]$ is the
-    frequency and the $\gamma_j$ are the autocovariances of $y_t$._
+    -   *Equation* \@ref(eq:SpecDens) *represents the ACs of a
+        stationary stochastic process:* \begin{equation}
+                f_y(\lambda) = (2\pi)^{-1} \sum_{j=-\infty}^{\infty}
+                               \gamma_j e^{-i\lambda j}
+                             =(2\pi)^{-1}\left(\gamma_0 + 2 \sum_{j=1}^{\infty}
+            \gamma_j \cos(\lambda j)\right)
+                                           (\#eq:SpecDens)
+        \end{equation} *where* $i=\sqrt{-1}$ is the imaginary unit,
+        $\lambda \in [-\pi, \pi]$ is the frequency and the $\gamma_j$
+        are the autocovariances of $y_t$.
 
-  + Equations can be referenced with `\@ref(eq:<name>)`, where name is defined
-    by adding `(\#eq:<name>)` in the line immediately before `\end{equation}`.
+    -   Equations can be referenced with `\@ref(eq:<name>)`, where name
+        is defined by adding `(\#eq:<name>)` in the line immediately
+        before `\end{equation}`.
 
 ## Review of Results
 
-*  Do the results support or do they contradict economic theory ?
+-   Do the results support or do they contradict economic theory ?
 
-*  What does the reader learn from the results?
+-   What does the reader learn from the results?
 
-*  Try to give an intuition for your results.
+-   Try to give an intuition for your results.
 
-*  Provide robustness checks.
+-   Provide robustness checks.
 
-*  Compare to previous research.
+-   Compare to previous research.
 
 <!--chapter:end:sections/04-results.Rmd-->
 
-# Conclusion
+# Conclusion {#conclusion-1}
 
-* Give a short summary of what has been done and what has been found.
+-   Give a short summary of what has been done and what has been found.
 
-* Expose results concisely.
+-   Expose results concisely.
 
-* Draw conclusions about the problem studied. What are the implications of your
-  findings?
+-   Draw conclusions about the problem studied. What are the
+    implications of your findings?
 
-* Point out some limitations of study (assist reader in judging validity of
-  findings).
+-   Point out some limitations of study (assist reader in judging
+    validity of findings).
 
-* Suggest issues for future research.
-
+-   Suggest issues for future research.
 
 <!--chapter:end:sections/05-conclusion.Rmd-->
 
 \newpage
 
-# References {-}
+# References {.unnumbered}
 
+```{=html}
 <!--
 To remove the indentation of the first entry.
 -->
+```
 \noindent
 
+```{=html}
 <!--
 To create a hanging indent and spacing between entries.  These three lines may need to be removed for styles that don't require the hanging indent.
 -->
-
+```
+```{=tex}
 \setlength{\parindent}{-0.5cm}
 \setlength{\leftskip}{0.5cm}
 \setlength{\parskip}{8pt}
+```
+::: {#refs}
+:::
 
-<div id="refs"></div>
-
+```{=html}
 <!--
 Restore to defaults
 -->
-
+```
+```{=tex}
 \indent
 \setlength{\parindent}{17pt}
 \setlength{\leftskip}{0pt}
 \setlength{\parskip}{0pt}
-
+```
 \newpage
 
 <!--chapter:end:sections/98-references.Rmd-->
 
 \appendix
+
 # Appendix
 
 Here goes the appendix!
 
 ## Figures
 
-```{r graph2, echo=FALSE, out.extra = "", fig.cap="Estimated residuals (2) from model XXX. ...", out.width = "50%"}
-knitr::include_graphics("figures/graph.eps")
-```
-
 ## Tables
 
+```{=tex}
 \begin{table}[ht]
     \begin{center}
         {\footnotesize
@@ -377,8 +443,7 @@ knitr::include_graphics("figures/graph.eps")
     February 15, 1999 to March 2, 2007. Swap rates measured as 3.12 (instead of 0.0312).}
     \label{tab:apptable}
 \end{table}
-
+```
 \newpage
 
 <!--chapter:end:sections/99-appendix.Rmd-->
-
