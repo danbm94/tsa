@@ -3,7 +3,7 @@ title: "Time Series Analyisis"
 runningheader: "Term Paper" # only for pdf output
 subtitle: "An implementation in R Markdown" # only for html output
 author: "Daniel Bustillo Mac Lean"
-date: "`r Sys.Date()`"
+date: 31-08-2021
 output:
   tufte::tufte_html: default
   tufte::tufte_handout:
@@ -208,3 +208,15 @@ directions
         before `\end{equation}`.
 
 
+
+
+# References
+
+
+@article{owidco2andothergreenhousegasemissions,
+    author = {Hannah Ritchie and Max Roser},
+    title = {CO₂ and Greenhouse Gas Emissions},
+    journal = {Our World in Data},
+    year = {2020},
+    note = {https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions}
+}
