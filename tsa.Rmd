@@ -23,6 +23,17 @@ knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
 options(htmltools.dir.version = FALSE)
 ```
 
+```{r load libraries and datasets, echo=FALSE}
+library(tidyverse)
+library(forecast)
+library(tseries)
+library(data.table)
+library(reshape2)
+
+data <- read.csv("Dataset/API_EN.ATM.CO2E.PC_DS2_en_csv_v2_2708833.csv", skip = 3, header=TRUE)
+data <- data[,-c(2:4)]
+```
+
 # Motivation
 
 Increasing evidence has shown that human emissions of carbon dioxide and
@@ -49,6 +60,8 @@ countries and will design a fitting econometric model. Lastly, a
 forecast for the next periods based on the model will be presented.
 
 
+
+
 -   What do we already know about the subject (literature review)? Use
     citations: @lingenfelser2011systematic shows that... Alternative
     Forms of the Wald test are considered [@kuncheva2004combining].
@@ -63,6 +76,29 @@ different sizes of population.
 Maybe disaggregate countries in the EU (high income vs low income), same in the USA with big states (California, Texas) vs poorer states such as (Mississippi, Alabama, Arkansas in Continental USA ). Kind of panel data, is there data available for that?
 
 Plot of CO2 in Europe
+```{r}
+#First filter the countries we are interested in
+data <- data %>% 
+  filter(Country.Name %in% c("European Union", "United States", "China", "India", "Brazil"))
+names <- data$Country.Name
+#transpose the dataframe to a u(seful format
+data1 <- transpose(data)
+colnames(data1) <- names
+rownames(data1) <- colnames(data)
+data1 <- data1[-1,]
+#Clean rownames and remove last 3 empty entries
+rownames(data1) <- lapply(rownames(data1), function(x) gsub(pattern = "X", replacement = "",x))
+data1 <- tibble::rownames_to_column(data1,var = "Year")
+data1 <- data1[-c(60:62),]
+
+#melt
+datap <- melt(data = data1,id="Year")
+##Plot
+ggplot(datap)+ geom_line(aes(x=Year, y=value ))
+
+
+```
+
 
 Plot of CO2 in USA
 
@@ -154,6 +190,8 @@ the economic consequences of your results and suggest different
 techniques how your model and a potential long-term forecast could be
 improved.
 
+Recall the autocorrelation function formula:
+$\rho _k = \frac{\gamma_k}{\gamma_o}=\frac{Cov[y_t,y_{t-k}]}{Var(y_t)} $
 
 -   Do the results support or do they contradict economic theory ?
 
@@ -190,7 +228,7 @@ directions
 
 
 
--   R Markdown can also supports math equations just like *LaTeX*!
+
 
     -   *Equation* \@ref(eq:SpecDens) *represents the ACs of a
         stationary stochastic process:* \begin{equation}
