@@ -1,34 +1,40 @@
 ---
-title: "Time Series Analyisis"
-runningheader: "Term Paper" # only for pdf output
+title: "Forecasting CO2 emissions using ARIMA models in Brazil, China, EU, India and US"
+runningheader: "Time Series Analysis Term Paper" # only for pdf output
 subtitle: "An implementation in R Markdown" # only for html output
 author: "Daniel Bustillo Mac Lean"
 date: 31-08-2021
 output:
-  tufte::tufte_html: default
   tufte::tufte_handout:
     citation_package: natbib
     latex_engine: xelatex
+  tufte::tufte_html: default
   tufte::tufte_book:
     citation_package: natbib
     latex_engine: xelatex
-
 link-citations: yes
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 library(tufte)
 # invalidate cache when the tufte version changes
-knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
+knitr::opts_chunk$set(cache.extra = packageVersion('tufte'),echo = FALSE)
 options(htmltools.dir.version = FALSE)
 ```
 
-```{r load libraries and datasets, echo=FALSE}
+```{r load libraries and datasets, include=FALSE}
 library(tidyverse)
 library(forecast)
 library(tseries)
 library(data.table)
 library(reshape2)
+library(zoo)
+library(scales)
+library(knitr)
+library(Hmisc)
 
 data <- read.csv("Dataset/API_EN.ATM.CO2E.PC_DS2_en_csv_v2_2708833.csv", skip = 3, header=TRUE)
 data <- data[,-c(2:4)]
@@ -59,23 +65,25 @@ paper will analyze the trends of CO2 emissions of the above-mentioned
 countries and will design a fitting econometric model. Lastly, a
 forecast for the next periods based on the model will be presented.
 
-
-
-
 -   What do we already know about the subject (literature review)? Use
     citations: @lingenfelser2011systematic shows that... Alternative
     Forms of the Wald test are considered [@kuncheva2004combining].
 
-Some exploratory data analysis on the different datasets
+# Literature review
+
+# Exploratory data analysis
 
 What kind of data do we use? C02 emissions per capita, why? Arguments
-for using that measure -\> Although all 3 regions are really big, the
+for using that measure -> Although all 3 regions are really big, the
 population density is different and thus "spreading" the CO2 emissions
 by population gives us more sensible data and accounted for the
-different sizes of population.
-Maybe disaggregate countries in the EU (high income vs low income), same in the USA with big states (California, Texas) vs poorer states such as (Mississippi, Alabama, Arkansas in Continental USA ). Kind of panel data, is there data available for that?
+different sizes of population. Maybe disaggregate countries in the EU
+(high income vs low income), same in the USA with big states
+(California, Texas) vs poorer states such as (Mississippi, Alabama,
+Arkansas in Continental USA ). Kind of panel data, is there data
+available for that?
 
-Plot of CO2 in Europe
+
 ```{r}
 #First filter the countries we are interested in
 data <- data %>% 
@@ -90,49 +98,77 @@ data1 <- data1[-1,]
 rownames(data1) <- lapply(rownames(data1), function(x) gsub(pattern = "X", replacement = "",x))
 data1 <- tibble::rownames_to_column(data1,var = "Year")
 data1 <- data1[-c(60:62),]
+data1$Year <- as.Date(data1$Year,format = "%Y")
 
+###Reorder code!!!
+data1$Brazil <- as.numeric(data1$Brazil)
+data1$China <- as.numeric(data1$China)
+data1$`European Union` <- as.numeric(data1$`European Union`)
+data1$India <- as.numeric(data1$India)
+data1$`United States` <- as.numeric(data1$`United States`)
 #melt
 datap <- melt(data = data1,id="Year")
 ##Plot
-ggplot(datap)+ geom_line(aes(x=Year, y=value ))
+ggplot(datap)+ geom_line(aes(x=Year, y= value, group=variable, colour= variable))+
+   theme_classic() +
+  xlab(label = "Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle(label = "CO2 Emissions", subtitle = "in metric tons per capita from 1960 to 2018")+
+  theme(legend.title = element_text())
+
+
+  
+  
 
 
 ```
 
+# Plot description
 
-Plot of CO2 in USA
-
-Plot of CO2 in China
-
-(Plot of CO2 in Brazil
-
-Plot of CO2 in India)
+As seen above, CO2 emissions of the countries of interest are showing
+different trends and magnitudes.
 
 The econometric and economic theory is briefly described and related
 literature is presented
 
 Idea: compare with GDP or GNP
 
+For this section, we compare the trends of CO2 emissions with the GDP
+(per capita or growth??) to test our hypothesis that up until some point
+in the last 30 years, GDP and CO2 emissions were highly correlated.
+
 Include kyoto and paris agreement and other historical events
 (fukushima, fridays for future?)
 
+Some other factors that could prove to be pivotal in the slow decline of
+CO2 emissions in the European Union and USA could be historical events
+like the Kyoto Agreement in 20XX and the Paris Agreement, and some
+natural distasters, like the 2011 tsunami in Japan that caused the
+explosion in the nuclear factory in Fukushima. This event led to a chain
+of events that ended with Germany's (and some other European countries)
+abandonment (?) of atomic energy.
+
 # The model and data
+
+In this section, we go over the data, its characteristics, sources and
+reliability. Moreover, we introduce the ARIMA (Auto Regressive
+Integrated Moving Average) model in a formal way, next, we run the model
+on our data to then set up all the insights to analyze in the following
+section.
 
 The econometric model and the data applied are described, a first
 descriptive analysis of the data is shown
 
--   Describe the data and its quality.All data is taken from the World
-    Bank's Database, overall this database has proven to be reliable for industrialized countries, not su much for developing countries, since their data might be manipulated(?).
-    
+All data is taken from the World Bank's Database. This database has proven to be reliable for industrialized countries, not su much for developing countries, since data from these countries might not be recollected or administered correctly by the corresponding authorities. (Get a source on that).
 
 -   How was the data sample selected?
 
-    As stated in the Introduction, our interest here is to analyze the
-    trends of the 3 biggest emitters of Co2 in the world: the USA, the
-    European Union and China [quote on that]. Additionally, we compare
-    those trends and forecast, with trends and forecast of emerging
-    economies such as Brazil and India, as those countries display worrying trends on CO2 emissions that could lead to irreversible temperature rises, contamination and deforestation.
-    
+As stated in the Introduction, our interest here is to analyze the
+trends of the 3 biggest emitters of CO2 in the world: the United States
+of America, the European Union and China [quote on that]. Additionally,
+we compare those trends and forecast, with trends and forecast of
+emerging economies such as Brazil and India, as those countries display
+worrying trends on CO2 emissions that are the product of contamination and deforestation due to their growing industries.
 
 -   Provide descriptive statistics such as:
 
@@ -148,6 +184,64 @@ descriptive analysis of the data is shown
 
     -   item time series plots, histogram.
     
+```{r}
+##Tables with descr stats
+summary(data1[,names]) %>% kable(digits = 2) %>% 
+  kableExtra::kable_classic()
+
+
+
+```
+
+
+Here we present some initial descriptive statistics for the different
+countries:
+
+- Time series plots for each country or region separately:
+
+
+```{r  descrstats,fig.show="hold", out.width="50%"}
+
+## Create time series objects for oll countries
+br <- ts(data1$Brazil,start = "1960")
+autoplot(as.zoo(br), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions p(metric tons per capita)")+
+  ggtitle("Brazil")
+
+ch <- ts(data1$China,start = "1960")
+autoplot(as.zoo(ch), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions p(metric tons per capita)")+
+  ggtitle("China")
+eur <- ts(data1$`European Union`, start = "1960")
+autoplot(as.zoo(eur), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions p(metric tons per capita)")+
+  ggtitle("European Union")
+
+ind <- ts(data1$India, start="1960")
+autoplot(as.zoo(ind), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions p(metric tons per capita)")+
+  ggtitle("India")
+
+us <- ts(data1$`United States`, start="1960")
+autoplot(as.zoo(us), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions p(metric tons per capita)")+
+  ggtitle("United States")
+```
+
+Recall the autocorrelation function formula: $\rho \_k =
+\frac{\gamma_k}{\gamma_o}=\frac{Cov[y_t,y_{t-k}]}{Var(y_t)}$
+
+## ACF plots and correlograms
 
 -   Allows the reader to judge whether the sample is biased or to
     evaluate possible impacts of outliers, for example.
@@ -158,7 +252,6 @@ descriptive analysis of the data is shown
     for the table environment. That way you don't have to manually enter
     in the table in LaTex, you can embed tables from R code.
 
-    
 # Methodology
 
 -   How was the data analyzed ?
@@ -175,60 +268,7 @@ descriptive analysis of the data is shown
 -   Depending on the topic this section can also be split up into
     separate sections.
 
-# Estimation and results
-
-The model choice is reasoned well in statistical and economic terms, the
-estimation results are presented, the results are interpreted and
-connected to the economic theory and literature from point 1.
-
-Find an appropriate ARIMA model to describe the three series. Base your
-decision on (P)ACFs, unit root tests, AIC and further diagnostic checks.
-What limits the validity of these results? 4. Forecast the CO2 emissions
-one period ahead and for 2030 based on the chosen model. Evaluate the
-forecast in comparison to an alternative prediction method. 5. Discuss
-the economic consequences of your results and suggest different
-techniques how your model and a potential long-term forecast could be
-improved.
-
-Recall the autocorrelation function formula:
-$\rho _k = \frac{\gamma_k}{\gamma_o}=\frac{Cov[y_t,y_{t-k}]}{Var(y_t)} $
-
--   Do the results support or do they contradict economic theory ?
-
--   What does the reader learn from the results?
-
--   Try to give an intuition for your results.
-
--   Provide robustness checks.
-
--   Compare to previous research.
-
-# Conclusion:
-
-Summary of the main results and outlook on further interesting research
-directions
-
-
--   Give a short summary of what has been done and what has been found.
-
--   Expose results concisely.
-
--   Draw conclusions about the problem studied. What are the
-    implications of your findings?
-
--   Point out some limitations of study (assist reader in judging
-    validity of findings).
-
--   Suggest issues for future research.
-
-
 [^1]: Here is an example of a footnote.
-
-
-
-
-
-
 
     -   *Equation* \@ref(eq:SpecDens) *represents the ACs of a
         stationary stochastic process:* \begin{equation}
@@ -245,16 +285,59 @@ directions
         is defined by adding `(\#eq:<name>)` in the line immediately
         before `\end{equation}`.
 
+# Estimation and results
+
+The model choice is reasoned well in statistical and economic terms, the
+estimation results are presented, the results are interpreted and
+connected to the economic theory and literature from point 1.
+
+Find an appropriate ARIMA model to describe the three series. Base your
+decision on (P)ACFs, unit root tests, AIC and further diagnostic checks.
+What limits the validity of these results? 4. Forecast the CO2 emissions
+one period ahead and for 2030 based on the chosen model. Evaluate the
+forecast in comparison to an alternative prediction method. 5. Discuss
+the economic consequences of your results and suggest different
+techniques how your model and a potential long-term forecast could be
+improved.
 
 
+
+-   Do the results support or do they contradict economic theory ?
+
+-   What does the reader learn from the results?
+
+-   Try to give an intuition for your results.
+
+-   Provide robustness checks.
+
+-   Compare to previous research.
+
+# Conclusion:
+
+Summary of the main results and outlook on further interesting research
+directions
+
+-   Give a short summary of what has been done and what has been found.
+
+-   Expose results concisely.
+
+-   Draw conclusions about the problem studied. What are the
+    implications of your findings?
+
+-   Point out some limitations of study (assist reader in judging
+    validity of findings).
+
+-   Suggest issues for future research.
 
 # References
 
+@article{owidco2andothergreenhousegasemissions, author = {Hannah Ritchie
+and Max Roser}, title = {CO₂ and Greenhouse Gas Emissions}, journal =
+{Our World in Data}, year = {2020}, note =
+{<https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions>} }
 
-@article{owidco2andothergreenhousegasemissions,
-    author = {Hannah Ritchie and Max Roser},
-    title = {CO₂ and Greenhouse Gas Emissions},
-    journal = {Our World in Data},
-    year = {2020},
-    note = {https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions}
+@article{nyoni2019modeling,
+  title={Modeling and forecasting carbon dioxide emissions in China using Autoregressive Integrated Moving Average (ARIMA) models},
+  author={Nyoni, Thabani and Mutongi, Chipo},
+  year={2019}
 }
