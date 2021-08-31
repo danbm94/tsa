@@ -1,21 +1,29 @@
 ---
-title: "Forecasting CO2 emissions using ARIMA models in Brazil, China, EU, India and US"
-runningheader: "Time Series Analysis Term Paper" # only for pdf output
-subtitle: "An implementation in R Markdown" # only for html output
+title: Forecasting CO2 emissions using ARIMA models in Brazil, China, EU, India and
+  US
 author: "Daniel Bustillo Mac Lean"
-date: 31-08-2021
+date: "31-08-2021"
 output:
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+    toc_depth: 2
+    latex_engine: xelatex
+    citation_package: natbib
   tufte::tufte_handout:
     citation_package: natbib
     latex_engine: xelatex
   tufte::tufte_html: default
-  tufte::tufte_book:
-    citation_package: natbib
-    latex_engine: xelatex
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
+subtitle: Time Series Analysis Term Paper
 link-citations: yes
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -35,6 +43,8 @@ library(zoo)
 library(scales)
 library(knitr)
 library(Hmisc)
+library(urca)
+library(kableExtra)
 
 data <- read.csv("Dataset/API_EN.ATM.CO2E.PC_DS2_en_csv_v2_2708833.csv", skip = 3, header=TRUE)
 data <- data[,-c(2:4)]
@@ -43,11 +53,12 @@ data <- data[,-c(2:4)]
 # Motivation
 
 Increasing evidence has shown that human emissions of carbon dioxide and
-other greenhouse gases are a primary driver of climate change (IPCC,
-2013). This makes worldwide emissions one of the world's most pressing
+other greenhouse gases are a primary driver of climate change (@stocker2014climate). This makes worldwide emissions one of the world's most pressing
 challenges and has provoked various international agreement, like the
 Paris Agreement on emission reduction and other climate goals. Three of
 the largest current emitting regions are China, the US and the EU.
+
+\newpage
 
 # Introduction
 
@@ -56,33 +67,68 @@ CO2 emissions in some of the countries of the European Union, the United
 States of America and China (and perhaps comparing them with emerging
 economics such as Brazil and India). Current actions to mitigate the
 climate effects of such steep rise of CO2 emissions over the last 50-60
-years (citation needed) are not enough to reach the goals set in the
-Paris Agreement by 2030. Such is the slowed response from the governing
+years are not enough to reach the goals set in the
+Paris Agreement by 2030. Such is the slow response from the governing
 institutions and international organizations that the current trends
 indicate that the temperature increases (and all the consequences behind
-it) will be irreversible in less that 5 years(citation needed). This
+it) will be irreversible in the future. This
 paper will analyze the trends of CO2 emissions of the above-mentioned
-countries and will design a fitting econometric model. Lastly, a
-forecast for the next periods based on the model will be presented.
-
--   What do we already know about the subject (literature review)? Use
-    citations: @lingenfelser2011systematic shows that... Alternative
-    Forms of the Wald test are considered [@kuncheva2004combining].
+countries and will design a fitting Auto Regressive Integrated Moving
+Average (ARIMA) model. Next, we will run diagnostics and perform the
+necessary tests to assure that the model accounts for stationarity and
+possibly seasonality. Lastly, a forecast for the next periods based on
+the model will be presented.
 
 # Literature review
 
-# Exploratory data analysis
+There have been several studies that apply ARIMA models and similar
+statistical and econometric techniques to forecast carbon dioxide
+emissions for different regions, countries and time periods.
 
-What kind of data do we use? C02 emissions per capita, why? Arguments
-for using that measure -> Although all 3 regions are really big, the
-population density is different and thus "spreading" the CO2 emissions
-by population gives us more sensible data and accounted for the
-different sizes of population. Maybe disaggregate countries in the EU
-(high income vs low income), same in the USA with big states
-(California, Texas) vs poorer states such as (Mississippi, Alabama,
-Arkansas in Continental USA ). Kind of panel data, is there data
-available for that?
+@fatima2019forecasting used Simple Exponential Smoothing (SES) and ARIMA
+models to forecast CO2 emissions for several Asian countries, with China
+and India among them. For China they fit an (1,2,0) ARIMA model and for
+India an (0,2,1) ARIMA model.
 
+@nyoni2019modeling modeled an ARIMA model for CO2 emissions in China for
+the period 1960-2014, they found that an ARIMA(1,2,1) model is the most
+suitable model to forecast total annual CO2 emissions for China.
+
+A study on carbon dioxide emissions between 1972 and 2015 in Bangladesh
+was conducted by @rahman2017modeling. According to their results, the
+best fitting ARIMA model was of order (0,2,1).
+
+One of the justifications some of these authors mention when choosing to
+forecast using ARIMA models was that no other data is necessary, the
+forecasting can be done using only historical values of the data, with
+no other variables involved.
+
+# The model and data
+
+In this section, we go over the data, its characteristics, sources and
+reliability. Moreover, we introduce the ARIMA (Auto Regressive
+Integrated Moving Average) model in a formal way, next, we run the model
+on our data to then set up all the insights to analyze in the following
+section.
+
+All data is taken from the World Bank's Database. This database has
+proven to be reliable for industrialized countries, not so much for
+developing countries, since data from these countries might not be
+recollected or administered correctly by the corresponding authorities.
+
+As stated in the Introduction, our interest here is to analyze the
+trends of the 3 biggest emitters of CO2 in the world: the United States
+of America, the European Union and China . Additionally, we compare
+those trends and forecast, with trends and forecast of emerging
+economies such as Brazil and India, as those countries display worrying
+trends on CO2 emissions that are product of contamination and
+deforestation due to their growing industries.
+
+The measure we use for our analysis is C02 emissions per capita, because
+although all country groups are the among the biggest in terms of
+surface, the population density is different and thus "spreading" the
+CO2 emissions by population gives us more sensible data and accounted
+for the different sizes of population.
 
 ```{r}
 #First filter the countries we are interested in
@@ -123,82 +169,36 @@ ggplot(datap)+ geom_line(aes(x=Year, y= value, group=variable, colour= variable)
 
 ```
 
-# Plot description
-
 As seen above, CO2 emissions of the countries of interest are showing
-different trends and magnitudes.
+different trends and magnitudes.[^1]
 
-The econometric and economic theory is briefly described and related
-literature is presented
+[^1]: For a more detailed view of each countries' time series see next
+    section of the paper
 
-Idea: compare with GDP or GNP
+Even though the European Union and the United States show some decline
+in emissions after the 1980s, the level of emissions are significantly
+higher than emerging countries like Brazil or India. The worrying part
+is that China's carbon dioxide emissions surpassed the ones from the
+European Union in the last 10 years, the steep rise since the early
+2000s matches Chinas rising role as a main actor in the global economy.
 
-For this section, we compare the trends of CO2 emissions with the GDP
-(per capita or growth??) to test our hypothesis that up until some point
-in the last 30 years, GDP and CO2 emissions were highly correlated.
+Below are the summary statistics for all countries and their respective
+time series plots (the time period of the data recollected is from 1960
+to 2018 for all countries)
 
-Include kyoto and paris agreement and other historical events
-(fukushima, fridays for future?)
-
-Some other factors that could prove to be pivotal in the slow decline of
-CO2 emissions in the European Union and USA could be historical events
-like the Kyoto Agreement in 20XX and the Paris Agreement, and some
-natural distasters, like the 2011 tsunami in Japan that caused the
-explosion in the nuclear factory in Fukushima. This event led to a chain
-of events that ended with Germany's (and some other European countries)
-abandonment (?) of atomic energy.
-
-# The model and data
-
-In this section, we go over the data, its characteristics, sources and
-reliability. Moreover, we introduce the ARIMA (Auto Regressive
-Integrated Moving Average) model in a formal way, next, we run the model
-on our data to then set up all the insights to analyze in the following
-section.
-
-The econometric model and the data applied are described, a first
-descriptive analysis of the data is shown
-
-All data is taken from the World Bank's Database. This database has proven to be reliable for industrialized countries, not su much for developing countries, since data from these countries might not be recollected or administered correctly by the corresponding authorities. (Get a source on that).
-
--   How was the data sample selected?
-
-As stated in the Introduction, our interest here is to analyze the
-trends of the 3 biggest emitters of CO2 in the world: the United States
-of America, the European Union and China [quote on that]. Additionally,
-we compare those trends and forecast, with trends and forecast of
-emerging economies such as Brazil and India, as those countries display
-worrying trends on CO2 emissions that are the product of contamination and deforestation due to their growing industries.
-
--   Provide descriptive statistics such as:
-
-    -   time period,
-
-    -   item number of observations, data frequency,
-
-    -   item mean, median,
-
-    -   item min, max, standard deviation,
-
-    -   item skewness, kurtosis, Jarque--Bera statistic,
-
-    -   item time series plots, histogram.
-    
-```{r}
+```{r  sumstats}
 ##Tables with descr stats
-summary(data1[,names]) %>% kable(digits = 2) %>% 
+summary(data1[,names]) %>% kable(digits = 2, caption = "Summary statistics for all countries") %>% 
   kableExtra::kable_classic()
-
-
 
 ```
 
+\newpage
 
-Here we present some initial descriptive statistics for the different
-countries:
+### Individual Time series plots
 
-- Time series plots for each country or region separately:
-
+To have a more detailed view of each countries dioxide emissions we plot
+each time series plot individually.
 
 ```{r  descrstats,fig.show="hold", out.width="50%"}
 
@@ -207,137 +207,428 @@ br <- ts(data1$Brazil,start = "1960")
 autoplot(as.zoo(br), geom = "line") + scale_x_yearqtr(format = "%Y")+
   theme_classic()+
   xlab("Year")+
-  ylab("CO2 Emissions p(metric tons per capita)")+
+  ylab("CO2 Emissions (metric tons per capita)")+
   ggtitle("Brazil")
 
 ch <- ts(data1$China,start = "1960")
 autoplot(as.zoo(ch), geom = "line") + scale_x_yearqtr(format = "%Y")+
   theme_classic()+
   xlab("Year")+
-  ylab("CO2 Emissions p(metric tons per capita)")+
+  ylab("CO2 Emissions (metric tons per capita)")+
   ggtitle("China")
 eur <- ts(data1$`European Union`, start = "1960")
 autoplot(as.zoo(eur), geom = "line") + scale_x_yearqtr(format = "%Y")+
   theme_classic()+
   xlab("Year")+
-  ylab("CO2 Emissions p(metric tons per capita)")+
+  ylab("CO2 Emissions (metric tons per capita)")+
   ggtitle("European Union")
 
 ind <- ts(data1$India, start="1960")
 autoplot(as.zoo(ind), geom = "line") + scale_x_yearqtr(format = "%Y")+
   theme_classic()+
   xlab("Year")+
-  ylab("CO2 Emissions p(metric tons per capita)")+
+  ylab("CO2 Emissions (metric tons per capita)")+
   ggtitle("India")
 
 us <- ts(data1$`United States`, start="1960")
 autoplot(as.zoo(us), geom = "line") + scale_x_yearqtr(format = "%Y")+
   theme_classic()+
   xlab("Year")+
-  ylab("CO2 Emissions p(metric tons per capita)")+
+  ylab("CO2 Emissions (metric tons per capita)")+
   ggtitle("United States")
 ```
 
-Recall the autocorrelation function formula: $\rho \_k =
-\frac{\gamma_k}{\gamma_o}=\frac{Cov[y_t,y_{t-k}]}{Var(y_t)}$
+Plotting the time series individually makes it evident that all series
+aren't stationary, as they show different trends. In the case of Brazil,
+China and India, their emissions have been rising over the last 50 years
+and there is positive trend. In the EU and the US, the case is
+different, but they appear to be non-stationary.
 
-## ACF plots and correlograms
+\newpage
 
--   Allows the reader to judge whether the sample is biased or to
-    evaluate possible impacts of outliers, for example.
+### Autocorrelation plots and Partial Autocorrelation plots
 
--   Here tables can be easily integrated using the `kable()` function in
-    the `knitr` package (with perhaps some additional help from the
-    `kableExtra` package). `kable()` will automatically generate a label
-    for the table environment. That way you don't have to manually enter
-    in the table in LaTex, you can embed tables from R code.
+Using the autocorrelation function formula: $$\rho_k =
+\frac{\gamma_k}{\gamma_o}=\frac{Cov[y_t,y_{t-k}]}{Var(y_t)}$$ all ACF
+are calculated for each country group. This works as a visual way to
+determine if a time series object is stationary or not. In the next
+section we run the necessary test to confirm our findings from the ACFS.
 
-# Methodology
+```{r acfs_plots, fig.show="hold", out.width="50%"}
+# Plot all acfs 
+acf(br, main="Brazil")
 
--   How was the data analyzed ?
+acf(ch, main="China")
 
--   Present the underlying economic model/theory and give reasons why it
-    is suitable to answer the given problem[^1].
+acf(eur,main="European Union")
 
--   Present econometric/statistical estimation method and give reasons
-    why it is suitable to answer the given problem.
+acf(ind,main="India")
 
--   Allows the reader to judge the validity of the study and its
-    findings.
+acf(us,main="United States")
+```
 
--   Depending on the topic this section can also be split up into
-    separate sections.
+To further assist with our model choice, we use the Partial
+Autocorrelation Functions plots as well.
 
-[^1]: Here is an example of a footnote.
+```{r pacf, fig.show="hold", out.width="50%"}
+### PACF
+pacf(br,main="Brazil")
 
-    -   *Equation* \@ref(eq:SpecDens) *represents the ACs of a
-        stationary stochastic process:* \begin{equation}
-                f_y(\lambda) = (2\pi)^{-1} \sum_{j=-\infty}^{\infty}
-                               \gamma_j e^{-i\lambda j}
-                             =(2\pi)^{-1}\left(\gamma_0 + 2 \sum_{j=1}^{\infty}
-            \gamma_j \cos(\lambda j)\right)
-                                           (\#eq:SpecDens)
-        \end{equation} *where* $i=\sqrt{-1}$ is the imaginary unit,
-        $\lambda \in [-\pi, \pi]$ is the frequency and the $\gamma_j$
-        are the autocovariances of $y_t$.
+pacf(ch,main="China")
 
-    -   Equations can be referenced with `\@ref(eq:<name>)`, where name
-        is defined by adding `(\#eq:<name>)` in the line immediately
-        before `\end{equation}`.
+pacf(eur,main="European Union")
+
+pacf(ind,main="India")
+
+pacf(us,main="United States")
+
+```
+
+\newpage
+
+# Stationarity tests
+
+### Augmented Dickey Fuller Test
+
+With this test we want to negate the null hypothesis that a unit root is
+present in an auto regressive model of a given time series, and that the
+process is thus not stationary.
+
+A common rule of thumb for determining pmax, suggested by
+@schwert1989business, is $$ p_{max}=[12(\frac{T}{100})^{1/4}]$$
+
+```{r adf}
+# Iterate for each country
+
+pmax = round(12*(length(br)/100)^0.25, 0)  # truncation lag according to Schwert (1989)
+#Brazil 
+br.adf = ur.df(br, type="trend", selectlags="AIC", lags=pmax)
+br.adf_tp = punitroot(q=br.adf@teststat[1], N=length(br), trend="c", statistic="t") # approximate p-values by MacKinnon (1996) 
+#China
+ch.adf = ur.df(ch, type="trend", selectlags="AIC", lags=pmax)
+ch.adf_tp = punitroot(q=ch.adf@teststat[1], N=length(ch), trend="c", statistic="t")
+#EU
+eur.adf = ur.df(eur, type="trend", selectlags="AIC", lags=pmax)
+eur.adf_tp = punitroot(q=eur.adf@teststat[1], N=length(eur), trend="c", statistic="t")
+#India
+ind.adf = ur.df(ind, type="trend", selectlags="AIC", lags=pmax)
+ind.adf_tp = punitroot(q=ind.adf@teststat[1], N=length(ind), trend="c", statistic="t")
+#US
+us.adf = ur.df(us, type="trend", selectlags="AIC", lags=pmax)
+us.adf_tp = punitroot(q=us.adf@teststat[1], N=length(us), trend="c", statistic="t")
+
+```
+
+### KPSS Unit Root Test
+
+We also use the KPSS Unit Root test from @kwiatkowski1992testing to test
+the H0 hypothesis of stationarity.
+
+```{r kpss, warning=FALSE}
+br.kpss = kpss.test(br, null="Level", lshort=FALSE)
+ch.kpss = kpss.test(ch, null="Level", lshort=FALSE)
+eur.kpss = kpss.test(eur, null="Level", lshort=FALSE)
+ind.kpss = kpss.test(ind, null="Level", lshort=FALSE)
+us.kpss = kpss.test(us, null="Level", lshort=FALSE)
+
+br.kpss.p <- br.kpss$p.value
+ch.kpss.p <- ch.kpss$p.value
+eur.kpss.p <- eur.kpss$p.value
+ind.kpss.p <- ind.kpss$p.value
+us.kpss.p <- us.kpss$p.value
+
+kpss <- c(br.kpss.p, ch.kpss.p, eur.kpss.p,ind.kpss.p, us.kpss.p)
+# br %>% ur.kpss() %>% summary()
+# ch %>% ur.kpss() %>% summary()
+# eur %>% ur.kpss() %>% summary()
+# ind %>% ur.kpss() %>% summary()
+# us %>% ur.kpss() %>% summary()
+```
+
+```{r tabunit}
+
+unit <- data.frame(row.names = names, c(br.adf_tp, ch.adf_tp,eur.adf_tp,ind.adf_tp, us.adf_tp), kpss)
+colnames(unit) <- c(" ADF p-value", "KPSS p-value")
+unit %>% 
+  kable(caption = "p-values for ADF and KPSS Tests") %>% 
+  kableExtra::kable_classic() %>%
+  kable_styling(latex_options = "HOLD_position")
+
+
+```
+
+Based on the table above , results from the Augmented Dickey Fuller Test
+and the KPSS Test, we can only reject the ADF H0 hypothesis of
+non-stationarity for Brazil and the European Union. On the contrary,
+KPSS p-values show that we might reject the H0 hypothesis of
+stationarity for Brazil, China and India.
+
+\newpage
 
 # Estimation and results
 
-The model choice is reasoned well in statistical and economic terms, the
-estimation results are presented, the results are interpreted and
-connected to the economic theory and literature from point 1.
+Having conducted the necessary test and evaluated al the different time
+series and their characteristics, it is time to estimate a model,
+present, analyze and interpret the results.
 
-Find an appropriate ARIMA model to describe the three series. Base your
-decision on (P)ACFs, unit root tests, AIC and further diagnostic checks.
-What limits the validity of these results? 4. Forecast the CO2 emissions
-one period ahead and for 2030 based on the chosen model. Evaluate the
-forecast in comparison to an alternative prediction method. 5. Discuss
-the economic consequences of your results and suggest different
-techniques how your model and a potential long-term forecast could be
-improved.
+For the estimation of the ARIMA model we ran a so-called
+[Grid-Search](https://www.r-bloggers.com/2018/11/searching-for-the-optimal-hyper-parameters-of-an-arima-model-in-parallel-the-tidy-gridsearch-approach/)
+for the 5 different country groups and all possible combinations of
+models within our parameters. We then evaluate the best model for each
+country based on the Akaike Information Criterion :
+$$ AIC=log(\hat{\sigma}^2_{\epsilon}) + 2\frac{p+q+1}{T}$$ Having
+defined the maximal *p* order in the previous section (11 lags), we
+restricted the *d* order to 3, as too many differentiation of the time
+series don't bring better results. Moreover, we restrict the *q*
+parameter from the MA(q) model to 11.
+
+Below there is a table with each countries' best models and their
+respective AIC coefficients.
+
+```{r gridsearch ,eval=FALSE}
+#Warning! This code chunk runs 576 models (combinations of (p,d,q) arima models)
+#it takes a lot of time
+order_list = list(seq(0, 11),
+                   seq(0, 3),
+                   seq(0, 11)) %>%
+    cross() %>%
+    purrr::map(lift_dl(c))
+orderdf = tibble("order" = order_list)
+
+models_df.br = orderdf %>%
+    mutate(models = map(order, ~possibly(arima, otherwise = NULL)(x = br, order = .x))) %>% 
+    filter(models != 'NULL') %>% 
+    mutate(aic = map_dbl(models, "aic"))
+best_model.br = models_df.br %>%
+    filter(aic == min(models_df.br$aic, na.rm = TRUE))
+
+models_df.ch = orderdf %>%
+    mutate(models = map(order, ~possibly(arima, otherwise = NULL)(x = ch, order = .x))) %>% 
+    filter(models != 'NULL') %>% 
+    mutate(aic = map_dbl(models, "aic"))
+best_model.ch = models_df.ch %>%
+    filter(aic == min(models_df.ch$aic, na.rm = TRUE))
+
+models_df.eur = orderdf %>%
+    mutate(models = map(order, ~possibly(arima, otherwise = NULL)(x = eur, order = .x))) %>% 
+    filter(models != 'NULL') %>% 
+    mutate(aic = map_dbl(models, "aic"))
+best_model.eur = models_df.eur %>%
+    filter(aic == min(models_df.eur$aic, na.rm = TRUE))
+
+models_df.ind = orderdf %>%
+    mutate(models = map(order, ~possibly(arima, otherwise = NULL)(x = ind, order = .x))) %>% 
+    filter(models != 'NULL') %>% 
+    mutate(aic = map_dbl(models, "aic"))
+best_model.ind = models_df.ind %>%
+    filter(aic == min(models_df.ind$aic, na.rm = TRUE))
+
+models_df.us = orderdf %>%
+    mutate(models = map(order, ~possibly(arima, otherwise = NULL)(x = us, order = .x))) %>% 
+    filter(models != 'NULL') %>% 
+    mutate(aic = map_dbl(models, "aic"))
+best_model.us = models_df.us %>%
+    filter(aic == min(models_df.us$aic, na.rm = TRUE))
+```
+
+```{r table}
+
+# In order to store the values from the past chunk and speed up the process
+# we store the values in a data frame manually
+results <- tibble("Country"=names,"Order"=c("(2,1,5)","(1,1,0)","(0,2,1)","(1,1,2)","(0,1,1)"), "AIC"=c("-127.6029","-61.7693","10.93498","-254.3758","98.9266"))
+
+results %>% kable() %>% 
+  kableExtra::kable_classic()%>%
+  kable_styling(latex_options = "HOLD_position")
+
+
+```
+
+```{r arima2}
+# sanity check, compare auto arima models vs the ones generated by Grid Search
+
+br.autoarima <- auto.arima(y = br, d=2,stepwise = TRUE ,seasonal = FALSE, ic = "aic", test='adf')#this doesn't result in the past value
+
+br.arima <- Arima(br,order = c(2,1,5))
+
+ch.autoarima <- auto.arima(y=ch, max.p = pmax,max.q = pmax,max.d = 1,seasonal = FALSE,ic = "aic")
+
+eur.autoarima <- auto.arima(y=eur, max.p = pmax,max.q = pmax,max.d = 2,seasonal = FALSE,ic = "aic")
+
+ind.autoarima <- auto.arima(y=ind, max.p = pmax,max.q = pmax,d=1,seasonal = FALSE,ic = "aic", test = "kpss")
+
+us.autoarima <- auto.arima(y=us, max.p = pmax,max.q = pmax, max.d = 1,seasonal = FALSE,ic = "aic", test="kpss")
+
+```
+
+We compared the results with results from the **auto.arima** function
+from the *forecast* package, and they match for all the countries,
+although the **auto.arima** function required some extra tweaking. In
+the end, we choose the models that display the lowest AIC values.
+
+### Diagnostics
+
+Next we proceed to run diagnostics of our models, that means that our model should capture the dynamics of the time series. Consequently, the residuals should be approximately white noise (No residual correlation, same variance, normally distributed). We do this with the Ljung-Box Test: $$ Q_K= T( T+2) \sum^K_{k=1}\frac{1}{T-k}\hat{\rho}^2_k  \longrightarrow \chi^2 (K -p-q)  $$
+
+
+```{r resid, fig.show="hold", out.width="50%", warning=FALSE}
+
+# DIAGNOSTIC CHECKS BR
+p <- br.arima$arma[1]
+q <- br.arima$arma[2]
+
+br.e <- br.arima$residuals    # COMPUTE RESIDUALS
+plot (br.e, type="l")
+Acf(br.e)
+LB.br.e <- Box.test(br.e, lag=pmax, type="Ljung-Box", fitdf=(p+q))    # LJUNG-BOX TEST
 
 
 
--   Do the results support or do they contradict economic theory ?
+# DIAGNOSTIC CHECKS CH
+p <- ch.autoarima$arma[1]
+q <- ch.autoarima$arma[2]
 
--   What does the reader learn from the results?
+ch.e <- ch.autoarima$residuals    # COMPUTE RESIDUALS
+plot (ch.e, type="l")
+Acf(ch.e,11)
+LB.ch.e <- Box.test(ch.e, lag=pmax, type="Ljung-Box", fitdf=(p+q))    # LJUNG-BOX TEST
 
--   Try to give an intuition for your results.
+# DIAGNOSTIC CHECKS EUR
+p <- eur.autoarima$arma[1]
+q <- eur.autoarima$arma[2]
 
--   Provide robustness checks.
+eur.e <- eur.autoarima$residuals    # COMPUTE RESIDUALS
+plot (eur.e, type="l")
+Acf(eur.e,11)
+LB.eur.e <- Box.test(eur.e, lag=pmax, type="Ljung-Box", fitdf=(p+q))    # LJUNG-BOX TEST
 
--   Compare to previous research.
+# DIAGNOSTIC CHECKS IND
+p <- ind.autoarima$arma[1]
+q <- ind.autoarima$arma[2]
 
-# Conclusion:
+ind.e <- ind.autoarima$residuals    # COMPUTE RESIDUALS
+plot (ind.e, type="l")
+Acf(ind.e,11)
+LB.ind.e <- Box.test(ind.e, lag=pmax, type="Ljung-Box", fitdf=(p+q))    # LJUNG-BOX TEST
 
-Summary of the main results and outlook on further interesting research
-directions
+# DIAGNOSTIC CHECKS 
+p <- br.arima$arma[1]
+q <- br.arima$arma[2]
 
--   Give a short summary of what has been done and what has been found.
+br.e <- br.arima$residuals    # COMPUTE RESIDUALS
+plot (br.e, type="l")
+Acf(br.e,11)
+LB.br.e <- Box.test(br.e, lag=, type="Ljung-Box", fitdf=(p+q))    # LJUNG-BOX TEST
 
--   Expose results concisely.
+```
 
--   Draw conclusions about the problem studied. What are the
-    implications of your findings?
+# Forecast 
+Finally, we proceed to forecast carbon dioxide emissions for each country group until 2030 based on each fitted ARIMA model. 
 
--   Point out some limitations of study (assist reader in judging
-    validity of findings).
 
--   Suggest issues for future research.
 
-# References
+```{r forecast,fig.show="hold", out.width="50%"}
+h <- 12      # FORECAST HORIZON 
+#BR
 
-@article{owidco2andothergreenhousegasemissions, author = {Hannah Ritchie
-and Max Roser}, title = {CO₂ and Greenhouse Gas Emissions}, journal =
-{Our World in Data}, year = {2020}, note =
-{<https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions>} }
+f <- forecast(br.arima, h=h, level=0.9)
+plot(f, main="Forecast for Brazil")
+# CH
+f <- forecast(ch.autoarima, h=h, level=0.9)
+plot(f, main="Forecast for China")
 
-@article{nyoni2019modeling,
-  title={Modeling and forecasting carbon dioxide emissions in China using Autoregressive Integrated Moving Average (ARIMA) models},
-  author={Nyoni, Thabani and Mutongi, Chipo},
-  year={2019}
-}
+# EUR
+f <- forecast(eur.autoarima, h=h, level=0.9)
+plot(f, main="Forecast for EU")
+
+# IND
+f <- forecast(ind.autoarima, h=h, level=0.9)
+plot(f, main="Forecast for India")
+
+# US
+f <- forecast(us.autoarima, h=h, level=0.9)
+plot(f, main="Forecast for US")
+```
+The forecast for the different countries show somewhat different outcomes, in the cases of  Brazil and the United States, prediction for the next 12 periods shows that the emissions will remain stable (within a 99% confidence interval).
+For the cases of China and India, the forecasted values show some worrying trends, by 2030 both of these countries will still show rising CO2 emissions, although China's trend seems to slow down a bit compared to the early 2000's. 
+Luckily, the forecast for the European Union shows that by 2030, their CO2 emissions will resemble the ones from the 1960s.
+
+
+\newpage
+
+# Conclusion
+
+To wrap up this paper we will review the process of the modelling, the
+estimation, the diagnostics and the forecasting of the different time
+series.
+
+Summing up what has been done, we compared time series from 5 different countries or country groups, to analyze and model the CO2 emissions using ARIMA models. Each country shows a different trend, magnitude and volatily in the data, so different parameters and different models based on assumptions had to be fitted for each country.
+We used a variety of a Grid Search algorithm to navigate through different combinations of ARIMA (p,d,q) parameters as a way to support our initial stationarity tests and Auto Correlation Functions. In the end we chose each model based on the lowest AIC value for each country. 
+Although literature on CO2 emissions is not particularly scarce, not many authors and researchers seem to use ARIMA models for this kind of forecasting. Probably there might exist another advanced techniques that better forecast CO2 emissions, for example the novel library *prophet* by Facebook, a collection of forecasting algorithms.
+
+From an environmental point of view, the results and forecast of this study are negative, though United States and the EU have shown decreasing trends in their emissions, they are still the two biggest actors in the world. With China's surprisingly fast emergence in the global economy, the forecast for them shows the most worrying trend. China has already surpassed the EU's emissions and though they have somewhat slowed down the pace, they still show a rising trend. The main reason for including two other emerging economies like Brazil and India, was to check if China's disturbing trends also translate into these countries. Sadly for our environment, the answer is yes, albeit on a much smaller scale.
+
+
+Some other factors that could prove to be pivotal in the slow decline of
+CO2 emissions in the European Union and USA could be historical events
+like the Kyoto Protocol in 1997 and the Paris Agreement in 2015, and some
+natural distasters, like the 2011 tsunami in Japan that caused the
+explosion in the nuclear factory in Fukushima. This event led to a chain
+of events that ended with Germany's (and some other European countries)
+abandonment of atomic energy.
+
+
+\newpage
+
+# Appendix
+
+For sake of completeness, we include here the differenced plots of the
+time series and their respective ACFs.
+
+```{r  diffplots,fig.show="hold", out.width="50%"}
+
+## Create time series objects for oll countries
+br <- ts(data1$Brazil,start = "1960")
+autoplot(as.zoo(diff(br)), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle("Brazil")
+
+ch <- ts(data1$China,start = "1960")
+autoplot(as.zoo(diff(ch)), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle("China")
+eur <- ts(data1$`European Union`, start = "1960")
+autoplot(as.zoo(diff(eur)), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle("European Union")
+
+ind <- ts(data1$India, start="1960")
+autoplot(as.zoo(diff(ind)), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle("India")
+
+us <- ts(data1$`United States`, start="1960")
+autoplot(as.zoo(diff(us)), geom = "line") + scale_x_yearqtr(format = "%Y")+
+  theme_classic()+
+  xlab("Year")+
+  ylab("CO2 Emissions (metric tons per capita)")+
+  ggtitle("United States")
+```
+
+```{r newacfs,fig.show="hold", out.width="50%"}
+acf(diff(br))
+acf(diff(ch))
+acf(diff(eur))
+acf(diff(ind))
+acf(diff(us))
+```
+
+\newpage
